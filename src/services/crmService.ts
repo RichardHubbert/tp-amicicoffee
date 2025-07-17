@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import axios from 'axios';
 
 export interface CustomerDataForCRM {
   customerName: string;
@@ -88,6 +89,72 @@ export const sendCustomerToCRM = async (customerData: CustomerDataForCRM): Promi
 /**
  * Send new customer data to CRM (without booking)
  */
+/**
+ * Sync customer data with the new CRM API endpoint
+ */
+export const syncCustomerWithCRM = async (customerData: {
+  customerName: string;
+  customerEmail: string;
+  customerPhone?: string;
+  businessId?: string;
+  customerId?: string;
+  bookingId?: string;
+  bookingDate?: string;
+  startTime?: string;
+  partySize?: number;
+  specialRequests?: string;
+  restaurantName?: string;
+}): Promise<CRMResponse> => {
+  try {
+    console.log('🔄 Syncing customer data with new CRM API:', customerData);
+    
+    // Always use the correct CRM business ID if not provided
+    const businessId = customerData.businessId || '3c58bd7f-e2f5-4b9d-9955-c416c1c120f2';
+    
+    // Prepare the payload for the new CRM API
+    const payload = {
+      name: customerData.customerName,
+      email: customerData.customerEmail,
+      phone: customerData.customerPhone || '',
+      business_id: businessId, // Always include the business ID
+      business_name: customerData.restaurantName || 'Woodman and Olive', // Use provided name or default
+      customer_id: customerData.customerId || '',
+      booking_id: customerData.bookingId || '',
+      booking_date: customerData.bookingDate || '',
+      start_time: customerData.startTime || '',
+      party_size: customerData.partySize || 0,
+      special_requests: customerData.specialRequests || ''
+    };
+    
+    console.log('📦 Sending payload to new CRM API:', payload);
+    
+    // Call the new CRM API endpoint
+    const response = await axios.post(
+      'https://lvsigdvzlccvizgxqmtl.supabase.co/functions/v1/sync-customer',
+      payload,
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    console.log('✅ New CRM API response:', response.data);
+    return {
+      success: true,
+      message: 'Customer data synced with CRM successfully',
+      crm_response: response.data
+    };
+  } catch (error) {
+    console.error('💥 Error syncing customer with CRM API:', error);
+    return {
+      success: false,
+      error: 'Failed to sync customer data with CRM',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
+};
+
 export const sendNewCustomerToCRM = async (customerData: {
   customerName: string;
   customerEmail: string;
@@ -103,9 +170,26 @@ export const sendNewCustomerToCRM = async (customerData: {
     console.log('📫 Sending new customer data to CRM:', customerData);
     
     // Always use the correct CRM business ID
-    const crmBusinessId = '9c38d437-b6c9-425a-9199-d514007fcb63';
+    const crmBusinessId = '3c58bd7f-e2f5-4b9d-9955-c416c1c120f2';
     console.log('🏢 Business ID being sent to CRM:', crmBusinessId);
 
+    // First, sync with the new CRM API endpoint
+    const newCrmResult = await syncCustomerWithCRM({
+      customerName: customerData.customerName,
+      customerEmail: customerData.customerEmail,
+      customerPhone: customerData.customerPhone,
+      businessId: crmBusinessId,
+      customerId: customerData.customerId,
+      bookingId: 'customer-' + (customerData.customerId || Date.now())
+    });
+    
+    if (newCrmResult.success) {
+      console.log('✅ New customer data synced with new CRM API successfully');
+    } else {
+      console.warn('⚠️ Failed to sync new customer data with new CRM API:', newCrmResult.error);
+    }
+    
+    // For backward compatibility, also send to the old CRM system
     // Create the payload object with explicit values for all fields
     const payload = {
       customerName: customerData.customerName,
@@ -120,13 +204,9 @@ export const sendNewCustomerToCRM = async (customerData: {
       businessId: crmBusinessId, // Use the correct CRM business ID
       isNewCustomer: true,
       customerId: customerData.customerId || ''
-      // Removed fields that don't exist in CRM schema
-      // externalId: customerData.externalId,
-      // dateOfBirth: customerData.dateOfBirth,
-      // preferences: customerData.preferences
     };
     
-    console.log('📦 Sending new customer payload:', payload);
+    console.log('📦 Sending new customer payload to old CRM:', payload);
     
     // Simplified function invocation without extra headers
     const { data, error } = await supabase.functions.invoke('send-customer-to-crm', {
@@ -137,15 +217,15 @@ export const sendNewCustomerToCRM = async (customerData: {
       console.error('❌ Supabase function error:', error);
       return {
         success: false,
-        error: 'Failed to send new customer data to CRM',
+        error: 'Failed to send new customer data to old CRM',
         details: error.message
       };
     }
 
-    console.log('✅ New customer CRM function response:', data);
+    console.log('✅ New customer old CRM function response:', data);
     return {
       success: true,
-      message: 'New customer data sent to CRM successfully',
+      message: 'New customer data sent to CRM systems successfully',
       crm_response: data
     };
 

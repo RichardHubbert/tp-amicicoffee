@@ -15,7 +15,7 @@ const RestaurantInfoSection = ({ onBookingClick, selectedRestaurant }: Restauran
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-              Visit {selectedRestaurant?.name || 'Amici Coffee'}
+              Visit {selectedRestaurant?.name || 'Woodman & Olive'}
             </h2>
             
             <div className="space-y-6">
@@ -32,9 +32,7 @@ const RestaurantInfoSection = ({ onBookingClick, selectedRestaurant }: Restauran
                 <MapPin className="h-6 w-6 text-amber-600 mt-1" />
                 <div>
                   <h3 className="font-semibold text-gray-900">Location</h3>
-                  <p className="text-gray-600">
-                    {selectedRestaurant?.address || '123 Fine Dining Street<br />Downtown District, City 12345'}
-                  </p>
+                  <p className="text-gray-600">20 West End Road<br />Wormley, Broxbourne, Herts EN10 7QN</p>
                 </div>
               </div>
 
@@ -42,7 +40,7 @@ const RestaurantInfoSection = ({ onBookingClick, selectedRestaurant }: Restauran
                 <Phone className="h-6 w-6 text-amber-600 mt-1" />
                 <div>
                   <h3 className="font-semibold text-gray-900">Bookings</h3>
-                  <p className="text-gray-600">+44 20 7946 0958</p>
+                  <p className="text-gray-600">01992463719</p>
                 </div>
               </div>
 
@@ -50,7 +48,7 @@ const RestaurantInfoSection = ({ onBookingClick, selectedRestaurant }: Restauran
                 <Mail className="h-6 w-6 text-amber-600 mt-1" />
                 <div>
                   <h3 className="font-semibold text-gray-900">Email</h3>
-                  <p className="text-gray-600">reservations@bellavista.com</p>
+                  <p className="text-gray-600">bookings@thewoodmanandolive.com</p>
                 </div>
               </div>
             </div>

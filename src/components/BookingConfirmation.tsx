@@ -95,7 +95,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({ bookingData, 
               <MapPin className="h-5 w-5 text-green-600" />
               <div>
                 <p className="font-medium text-green-800">Location</p>
-                <p className="text-green-700">Amici Coffee</p>
+                <p className="text-green-700">20 West End Road Wormley, Broxbourne, Herts EN10 7QN</p>
               </div>
             </div>
           </div>
@@ -109,13 +109,13 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({ bookingData, 
         <CardContent className="space-y-3">
           <div className="flex items-center space-x-3">
             <Mail className="h-4 w-4 text-gray-400" />
-            <span className="text-gray-700">{bookingData.customerEmail}</span>
+            <span className="text-gray-700">{bookingData.customerEmail || 'bookings@thewoodmanandolive.com'}</span>
           </div>
           
           {bookingData.customerPhone && (
             <div className="flex items-center space-x-3">
               <Phone className="h-4 w-4 text-gray-400" />
-              <span className="text-gray-700">{bookingData.customerPhone}</span>
+              <span className="text-gray-700">{bookingData.customerPhone || '01992463719'}</span>
             </div>
           )}
 
@@ -134,9 +134,9 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({ bookingData, 
       <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
         <h3 className="font-medium text-amber-800 mb-2">Important Information</h3>
         <ul className="text-sm text-amber-700 space-y-1">
-          <li>• A confirmation email will be sent to {bookingData.customerEmail}</li>
+          <li>• A confirmation email will be sent to {bookingData.customerEmail || 'bookings@thewoodmanandolive.com'}</li>
           <li>• Please arrive on time for your reservation</li>
-          <li>• Contact us at (555) 123-4567 if you need to modify your booking</li>
+          <li>• Contact us at 01992463719 if you need to modify your booking</li>
           <li>• Cancellations should be made at least 2 hours in advance</li>
         </ul>
       </div>

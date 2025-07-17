@@ -53,7 +53,7 @@ const steps = [
 const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, restaurant, initialDate, initialTime, initialPartySize }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [bookingData, setBookingData] = useState<Partial<BookingData>>({ 
-    restaurantId: '24e2799f-60d5-4e3b-bb30-b8049c9ae56d', // Default Amici Coffee restaurant ID
+    restaurantId: '24e2799f-60d5-4e3b-bb30-b8049c9ae56d', // Default The Woodman & Olive restaurant ID
     date: undefined 
   });
   const [isSubmitting, setIsSubmitting] = useState(false);

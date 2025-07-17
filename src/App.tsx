@@ -17,8 +17,8 @@ const queryClient = new QueryClient();
 // Get the basename from the current pathname
 const getBasename = () => {
   const pathname = window.location.pathname;
-  if (pathname.startsWith('/amicicoffee')) {
-    return '/amicicoffee';
+  if (pathname.startsWith('/woodmanandolive')) {
+    return '/woodmanandolive';
   }
   return '/';
 };

@@ -50,9 +50,9 @@ export interface CustomerAnalytics {
 
 // Get current business from URL or context
 export const getCurrentBusiness = (): string => {
-  // For now, hardcode to Amici Coffee
+  // For now, hardcode to Woodman & Olive
   // In production, this would be determined by domain or subdomain
-  return 'amicicoffee';
+  return 'woodmanandolive';
 };
 
 // Fetch all businesses (admin only)

@@ -30,9 +30,9 @@ interface RestaurantSelectorProps {
 const FALLBACK_RESTAURANTS: Restaurant[] = [
   {
     id: '1',
-    name: 'Amici Coffee',
-    address: '123 Fine Dining Street, Downtown District',
-    cuisine: 'Fine Dining',
+    name: 'Woodman & Olive',
+    address: '20 West End Road Wormley, Broxbourne, Herts EN10 7QN',
+    cuisine: 'Modern European',
     rating: 4.8,
     imageUrl: '/lovable-uploads/d1a98a63-2cc5-4972-9f0d-87d62451a02b.png'
   }

@@ -1,15 +1,15 @@
 -- Associate all existing data with the business
 -- This ensures proper multi-tenant isolation
 
--- First, ensure the Amici Coffee business exists
+-- First, ensure the Woodman & Olive business exists
 INSERT INTO businesses (id, name, slug, domain, contact_email, address) 
 VALUES (
   '24e2799f-60d5-4e3b-bb30-b8049c9ae56d',
-  'Amici Coffee',
-  'amicicoffee',
-  'amicicoffee.tablepilot.co.uk',
-  'info@amicicoffee.com',
-  '123 Coffee Street, Downtown'
+  'Woodman & Olive',
+  'woodmanandolive',
+  'woodmanandolive.tablepilot.co.uk',
+  'info@woodmanandolive.com',
+  '123 Fine Dining Street, Downtown'
 ) ON CONFLICT (id) DO NOTHING;
 
 -- Associate all existing restaurants with Amici Coffee business

@@ -53,17 +53,17 @@ BEGIN
             created_by
         ) VALUES (
             '24e2799f-60d5-4e3b-bb30-b8049c9ae56d',
-            'Amici Coffee',
-            'amicicoffee',
-            'amicicoffee.tablepilot.co.uk',
-            'info@amicicoffee.com',
+            'Woodman & Olive',
+            'woodmanandolive',
+            'woodmanandolive.tablepilot.co.uk',
+            'info@woodmanandolive.com',
             '123 Fine Dining Street, London, UK',
             NULL
         ) ON CONFLICT (id) DO UPDATE SET
-            name = 'Amici Coffee',
-            slug = 'amicicoffee',
-            domain = 'amicicoffee.tablepilot.co.uk',
-            contact_email = 'info@amicicoffee.com',
+            name = 'Woodman & Olive',
+            slug = 'woodmanandolive',
+            domain = 'woodmanandolive.tablepilot.co.uk',
+            contact_email = 'info@woodmanandolive.com',
             address = '123 Fine Dining Street, London, UK',
             created_by = NULL;
     ELSE
@@ -78,17 +78,17 @@ BEGIN
             created_by
         ) VALUES (
             '24e2799f-60d5-4e3b-bb30-b8049c9ae56d',
-            'Amici Coffee',
-            'amicicoffee',
-            'amicicoffee.tablepilot.co.uk',
-            'info@amicicoffee.com',
+            'Woodman & Olive',
+            'woodmanandolive',
+            'woodmanandolive.tablepilot.co.uk',
+            'info@woodmanandolive.com',
             '123 Fine Dining Street, London, UK',
             valid_user_id
         ) ON CONFLICT (id) DO UPDATE SET
-            name = 'Amici Coffee',
-            slug = 'amicicoffee',
-            domain = 'amicicoffee.tablepilot.co.uk',
-            contact_email = 'info@amicicoffee.com',
+            name = 'Woodman & Olive',
+            slug = 'woodmanandolive',
+            domain = 'woodmanandolive.tablepilot.co.uk',
+            contact_email = 'info@woodmanandolive.com',
             address = '123 Fine Dining Street, London, UK',
             created_by = valid_user_id;
     END IF;

@@ -1,7 +1,7 @@
 -- First, let's see what businesses exist and update them with appropriate slugs
 UPDATE businesses 
 SET slug = CASE 
-    WHEN name ILIKE '%amici%' OR name ILIKE '%coffee%' THEN 'amicicoffee'
+    WHEN name ILIKE '%woodman%' OR name ILIKE '%olive%' THEN 'woodmanandolive'
     WHEN name IS NOT NULL THEN LOWER(REPLACE(REPLACE(name, ' ', '-'), '''', ''))
     ELSE 'business-' || id::text
 END

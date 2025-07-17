@@ -84,20 +84,20 @@ CREATE INDEX IF NOT EXISTS idx_businesses_slug ON businesses(slug);
 CREATE INDEX IF NOT EXISTS idx_businesses_domain ON businesses(domain);
 CREATE INDEX IF NOT EXISTS idx_businesses_active ON businesses(is_active);
 
--- Insert Amici Coffee business with proper slug
+-- Insert Woodman & Olive business with proper slug
 INSERT INTO businesses (id, name, slug, domain, contact_email, address) 
 VALUES (
   '24e2799f-60d5-4e3b-bb30-b8049c9ae56d',
-  'Amici Coffee',
-  'amicicoffee',
-  'amicicoffee.tablepilot.co.uk',
-  'info@amicicoffee.com',
+  'Woodman & Olive',
+  'woodmanandolive',
+  'woodmanandolive.tablepilot.co.uk',
+  'info@woodmanandolive.com',
   '123 Fine Dining Street, London, UK'
 ) ON CONFLICT (id) DO UPDATE SET
-  name = 'Amici Coffee',
-  slug = 'amicicoffee',
-  domain = 'amicicoffee.tablepilot.co.uk',
-  contact_email = 'info@amicicoffee.com',
+  name = 'Woodman & Olive',
+  slug = 'woodmanandolive',
+  domain = 'woodmanandolive.tablepilot.co.uk',
+  contact_email = 'info@woodmanandolive.com',
   address = '123 Fine Dining Street, London, UK',
   updated_at = NOW();
 
@@ -184,22 +184,22 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION get_current_business_id()
 RETURNS UUID AS $$
 BEGIN
-    -- For now, return Amici Coffee business ID
+    -- For now, return Woodman & Olive business ID
     -- In production, this would be determined by domain, subdomain, or user context
     RETURN '24e2799f-60d5-4e3b-bb30-b8049c9ae56d'::UUID;
 END;
 $$ LANGUAGE plpgsql;
 
--- Create a function to get Amici Coffee business ID
-CREATE OR REPLACE FUNCTION get_amici_coffee_business_id()
+-- Create a function to get Woodman & Olive business ID
+CREATE OR REPLACE FUNCTION get_woodmanandolive_business_id()
 RETURNS UUID AS $$
 BEGIN
     RETURN '24e2799f-60d5-4e3b-bb30-b8049c9ae56d'::UUID;
 END;
 $$ LANGUAGE plpgsql;
 
--- Create a function to get Amici Coffee restaurant ID
-CREATE OR REPLACE FUNCTION get_amici_coffee_restaurant_id()
+-- Create a function to get Woodman & Olive restaurant ID
+CREATE OR REPLACE FUNCTION get_woodmanandolive_restaurant_id()
 RETURNS UUID AS $$
 BEGIN
     RETURN '24e2799f-60d5-4e3b-bb30-b8049c9ae56d'::UUID;

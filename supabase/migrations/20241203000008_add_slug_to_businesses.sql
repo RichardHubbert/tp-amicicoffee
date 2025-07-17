@@ -4,9 +4,9 @@ ALTER TABLE businesses ADD COLUMN IF NOT EXISTS slug VARCHAR(100);
 -- Create unique index on slug if it doesn't exist
 CREATE UNIQUE INDEX IF NOT EXISTS idx_businesses_slug ON businesses(slug);
 
--- Update existing Amici Coffee record with slug if it doesn't have one
+-- Update existing Woodman & Olive record with slug if it doesn't have one
 UPDATE businesses 
-SET slug = 'amicicoffee'
+SET slug = 'woodmanandolive'
 WHERE id = '24e2799f-60d5-4e3b-bb30-b8049c9ae56d' 
 AND (slug IS NULL OR slug = '');
 

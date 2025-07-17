@@ -1,12 +1,12 @@
-# Amici Coffee
+# Woodman & Olive
 
 ## Project info
 
-**Development URL**: https://lovable.dev/projects/572fb16c-338f-484d-a597-4d5dc1a7a5cc
+**Development URL**: https://lovable.dev/projects/woodmanandolive
 
 **Production URL**: https://tablepilot.co.uk
 
-**Project Name**: Amici Coffee
+**Project Name**: Woodman & Olive
 
 ## How can I edit this code?
 

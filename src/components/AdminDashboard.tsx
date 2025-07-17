@@ -9,9 +9,6 @@ import { fetchTables, fetchAllBookings, getNextReservationForTable, type Table a
 import { useAdmin } from '@/hooks/useAdmin';
 import { Dialog, DialogContent, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { fetchRestaurants, Restaurant } from '@/services/restaurantService';
-import { testEmailService } from '@/services/emailService';
-import CRMTestButton from '@/components/CRMTestButton';
-import NewCustomerCRMTestButton from '@/components/NewCustomerCRMTestButton';
 
 const AdminDashboard = () => {
   const { isAdmin } = useAdmin();
@@ -29,7 +26,6 @@ const AdminDashboard = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [editError, setEditError] = useState<string | null>(null);
-  const [emailTestResult, setEmailTestResult] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -142,25 +138,6 @@ const AdminDashboard = () => {
       } finally {
         setActionLoading(false);
       }
-    }
-  };
-
-  const handleTestEmail = async () => {
-    setActionLoading(true);
-    setEmailTestResult(null);
-    try {
-      console.log('🧪 Testing EmailJS service...');
-      const result = await testEmailService();
-      if (result.success) {
-        setEmailTestResult('✅ Email test successful! Check your EmailJS dashboard for the test email.');
-      } else {
-        setEmailTestResult(`❌ Email test failed: ${result.error}`);
-      }
-    } catch (err: any) {
-      console.error('Email test error:', err);
-      setEmailTestResult(`❌ Email test error: ${err?.message || 'Unknown error'}`);
-    } finally {
-      setActionLoading(false);
     }
   };
 
@@ -296,41 +273,6 @@ const AdminDashboard = () => {
                 </div>
               </CardContent>
             </Card>
-          </div>
-        </div>
-
-        {/* Email Test Section */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-700">Email Service Test</h3>
-            <Button 
-              onClick={handleTestEmail} 
-              disabled={actionLoading}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              {actionLoading ? 'Testing...' : 'Test Email Service'}
-            </Button>
-          </div>
-          {emailTestResult && (
-            <div className={`p-3 rounded-lg ${
-              emailTestResult.includes('✅') 
-                ? 'bg-green-50 border border-green-200 text-green-800' 
-                : 'bg-red-50 border border-red-200 text-red-800'
-            }`}>
-              {emailTestResult}
-            </div>
-          )}
-        </div>
-
-        {/* CRM Integration Test Section */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-700">CRM Integration Test</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <CRMTestButton />
-            <NewCustomerCRMTestButton />
           </div>
         </div>
 
