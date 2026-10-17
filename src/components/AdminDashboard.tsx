@@ -9,6 +9,10 @@ import { fetchTables, fetchAllBookings, getNextReservationForTable, type Table a
 import { useAdmin } from '@/hooks/useAdmin';
 import { Dialog, DialogContent, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { fetchRestaurants, Restaurant } from '@/services/restaurantService';
+import { testEmailService } from '@/services/emailService';
+import CRMTestButton from '@/components/CRMTestButton';
+import NewCustomerCRMTestButton from '@/components/NewCustomerCRMTestButton';
+import DashboardRestaurants from '@/components/DashboardRestaurants';
 
 const AdminDashboard = () => {
   const { isAdmin } = useAdmin();
@@ -26,6 +30,7 @@ const AdminDashboard = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [editError, setEditError] = useState<string | null>(null);
+  const [emailTestResult, setEmailTestResult] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -138,6 +143,24 @@ const AdminDashboard = () => {
       } finally {
         setActionLoading(false);
       }
+    }
+  };
+
+  const handleTestEmail = async () => {
+    setActionLoading(true);
+    setEmailTestResult(null);
+    try {
+      const result = await testEmailService();
+      if (result.success) {
+        setEmailTestResult('✅ Email test successful! Check richardhubbert@gmail.com for the test email.');
+      } else {
+        setEmailTestResult(`❌ Email test failed: ${result.error}`);
+      }
+    } catch (err: any) {
+      console.error('Email test error:', err);
+      setEmailTestResult(`❌ Email test error: ${err?.message || 'Unknown error'}`);
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -273,6 +296,41 @@ const AdminDashboard = () => {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </div>
+
+        {/* Email Test Section */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-700">Email Service Test</h3>
+            <Button 
+              onClick={handleTestEmail} 
+              disabled={actionLoading}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              {actionLoading ? 'Testing...' : 'Test Email Service'}
+            </Button>
+          </div>
+          {emailTestResult && (
+            <div className={`p-3 rounded-lg ${
+              emailTestResult.includes('✅') 
+                ? 'bg-green-50 border border-green-200 text-green-800' 
+                : 'bg-red-50 border border-red-200 text-red-800'
+            }`}>
+              {emailTestResult}
+            </div>
+          )}
+        </div>
+
+        {/* CRM Integration Test Section */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-700">CRM Integration Test</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CRMTestButton />
+            <NewCustomerCRMTestButton />
           </div>
         </div>
 
@@ -442,39 +500,7 @@ const AdminDashboard = () => {
           </Card>
         </div>
 
-        {/* Restaurant Management Section - Only for Admin */}
-        {isAdmin && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building2 className="h-5 w-5" />
-                Restaurant Management
-              </CardTitle>
-              <CardDescription>
-                Manage restaurants in the system. Add, edit, or remove restaurants.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-2">
-                    Manage all restaurants that appear in the restaurant selector dropdown.
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    Only visible to admin users (richardhubbert@gmail.com)
-                  </p>
-                </div>
-                <Button 
-                  onClick={() => window.location.href = '/restaurants'}
-                  className="flex items-center gap-2"
-                >
-                  <Building2 className="h-4 w-4" />
-                  Manage Restaurants
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        <DashboardRestaurants />
 
         {/* User Management Section - Only for Admin */}
         {isAdmin && (

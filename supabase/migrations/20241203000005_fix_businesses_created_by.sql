@@ -34,7 +34,7 @@ EXCEPTION
         NULL;
 END $$;
 
--- Insert Woodman & Olive business with proper created_by value
+-- Insert Amici Coffee business with proper created_by value
 INSERT INTO businesses (
     id, 
     name, 
@@ -45,17 +45,17 @@ INSERT INTO businesses (
     created_by
 ) VALUES (
     '24e2799f-60d5-4e3b-bb30-b8049c9ae56d',
-    'Woodman & Olive',
-    'woodmanandolive',
-    'woodmanandolive.tablepilot.co.uk',
-    'info@woodmanandolive.com',
+    'Amici Coffee',
+    'amicicoffee',
+    'amicicoffee.tablepilot.co.uk',
+    'info@amicicoffee.com',
     '123 Fine Dining Street, London, UK',
     '00000000-0000-0000-0000-000000000000'::UUID
 ) ON CONFLICT (id) DO UPDATE SET
-    name = 'Woodman & Olive',
-    slug = 'woodmanandolive',
-    domain = 'woodmanandolive.tablepilot.co.uk',
-    contact_email = 'info@woodmanandolive.com',
+    name = 'Amici Coffee',
+    slug = 'amicicoffee',
+    domain = 'amicicoffee.tablepilot.co.uk',
+    contact_email = 'info@amicicoffee.com',
     address = '123 Fine Dining Street, London, UK',
     created_by = '00000000-0000-0000-0000-000000000000'::UUID,
     updated_at = NOW();

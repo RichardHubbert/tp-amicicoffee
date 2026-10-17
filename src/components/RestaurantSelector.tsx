@@ -26,17 +26,7 @@ interface RestaurantSelectorProps {
   className?: string;
 }
 
-// Fallback restaurant data if no restaurants are in the database
-const FALLBACK_RESTAURANTS: Restaurant[] = [
-  {
-    id: '1',
-    name: 'Woodman & Olive',
-    address: '20 West End Road Wormley, Broxbourne, Herts EN10 7QN',
-    cuisine: 'Modern European',
-    rating: 4.8,
-    imageUrl: '/lovable-uploads/d1a98a63-2cc5-4972-9f0d-87d62451a02b.png'
-  }
-];
+const FALLBACK_RESTAURANTS: Restaurant[] = [];
 
 const RestaurantSelector: React.FC<RestaurantSelectorProps> = ({
   selectedRestaurant,

@@ -1,11 +1,14 @@
 import React from 'react';
 import { Calendar, Clock, Mail, MapPin, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Restaurant } from './RestaurantSelector';
-
 interface RestaurantInfoSectionProps {
   onBookingClick: () => void;
-  selectedRestaurant?: Restaurant;
+  selectedRestaurant?: {
+    name?: string;
+    address?: string;
+    phone?: string | null;
+    email?: string | null;
+  };
 }
 
 const RestaurantInfoSection = ({ onBookingClick, selectedRestaurant }: RestaurantInfoSectionProps) => {
@@ -15,7 +18,7 @@ const RestaurantInfoSection = ({ onBookingClick, selectedRestaurant }: Restauran
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-              Visit {selectedRestaurant?.name || 'Woodman & Olive'}
+              Visit {selectedRestaurant?.name || 'Woodman and Olive'}
             </h2>
             
             <div className="space-y-6">
@@ -32,7 +35,9 @@ const RestaurantInfoSection = ({ onBookingClick, selectedRestaurant }: Restauran
                 <MapPin className="h-6 w-6 text-amber-600 mt-1" />
                 <div>
                   <h3 className="font-semibold text-gray-900">Location</h3>
-                  <p className="text-gray-600">20 West End Road<br />Wormley, Broxbourne, Herts EN10 7QN</p>
+                  <p className="text-gray-600">
+                    {selectedRestaurant?.address || 'Address to be confirmed'}
+                  </p>
                 </div>
               </div>
 
@@ -40,7 +45,7 @@ const RestaurantInfoSection = ({ onBookingClick, selectedRestaurant }: Restauran
                 <Phone className="h-6 w-6 text-amber-600 mt-1" />
                 <div>
                   <h3 className="font-semibold text-gray-900">Bookings</h3>
-                  <p className="text-gray-600">01992463719</p>
+                  <p className="text-gray-600">{selectedRestaurant?.phone || 'Phone number coming soon'}</p>
                 </div>
               </div>
 
@@ -48,7 +53,7 @@ const RestaurantInfoSection = ({ onBookingClick, selectedRestaurant }: Restauran
                 <Mail className="h-6 w-6 text-amber-600 mt-1" />
                 <div>
                   <h3 className="font-semibold text-gray-900">Email</h3>
-                  <p className="text-gray-600">bookings@thewoodmanandolive.com</p>
+                  <p className="text-gray-600">{selectedRestaurant?.email || 'Email coming soon'}</p>
                 </div>
               </div>
             </div>

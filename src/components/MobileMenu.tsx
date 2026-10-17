@@ -7,9 +7,10 @@ import { useNavigate } from 'react-router-dom';
 
 interface MobileMenuProps {
   onBookingClick?: () => void;
+  brandName?: string;
 }
 
-const MobileMenu = ({ onBookingClick }: MobileMenuProps) => {
+const MobileMenu = ({ onBookingClick, brandName = 'Woodman and Olive' }: MobileMenuProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const { user, signOut } = useAuth();
   const { toast } = useToast();
@@ -66,7 +67,7 @@ const MobileMenu = ({ onBookingClick }: MobileMenuProps) => {
         <div className="fixed inset-0 z-50 bg-white shadow-lg">
           <div className="container mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-8">
-              <h1 className="text-2xl font-bold text-gray-900">Woodman & Olive</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{brandName}</h1>
               <Button 
                 variant="ghost" 
                 size="sm" 

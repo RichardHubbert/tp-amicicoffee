@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { format, addMinutes, isSameDay } from 'date-fns';
-import { sendCustomerToCRM, syncCustomerWithCRM } from './crmService';
+import { sendCustomerToCRM } from './crmService';
 
 export interface Table {
   id: string;
@@ -27,6 +27,9 @@ export interface Booking {
     id: string;
     name: string;
     cuisine: string;
+    address?: string;
+    phone?: string | null;
+    email?: string | null;
   };
 }
 
@@ -213,7 +216,7 @@ export const createBooking = async (bookingData: {
       .insert({
         table_id: optimalTable.id,
         restaurant_id: bookingData.restaurantId,
-        business_id: '7b632d6f-4421-48ee-9cfe-2674f793345a', // Amici Coffee business ID
+        business_id: '24e2799f-60d5-4e3b-bb30-b8049c9ae56d', // Amici Coffee business ID
         customer_name: bookingData.customerName,
         customer_email: bookingData.customerEmail,
         customer_phone: bookingData.customerPhone,
@@ -234,35 +237,15 @@ export const createBooking = async (bookingData: {
     
     console.log('✅ Booking created successfully:', data);
     
-    // Send customer data to CRM (don't wait for this to complete)
+    // Send customer data to CRM (fire and forget - don't block booking creation)
     try {
-      console.log('📨 Sending customer data to CRM...');
+      console.log('📧 Sending customer data to CRM...');
       console.log('🏢 Business ID from booking data:', data.business_id);
       // Use the correct CRM business ID - this is different from the booking platform business ID
-      const crmBusinessId = '3c58bd7f-e2f5-4b9d-9955-c416c1c120f2'; // This is the CRM business ID
+      // The CRM edge function will map restaurant IDs to CRM business IDs
+      const crmBusinessId = '9c38d437-b6c9-425a-9199-d514007fcb63'; // This is the CRM business ID
       
-      // First, sync with the new CRM API endpoint
-      const newCrmResult = await syncCustomerWithCRM({
-        customerName: bookingData.customerName,
-        customerEmail: bookingData.customerEmail,
-        customerPhone: bookingData.customerPhone,
-        specialRequests: bookingData.specialRequests,
-        businessId: crmBusinessId,
-        bookingId: data.id,
-        bookingDate: format(bookingData.date, 'yyyy-MM-dd'),
-        startTime: bookingData.startTime,
-        partySize: bookingData.partySize,
-        restaurantName: 'Woodman and Olive' // Always include the restaurant name
-      });
-      
-      if (newCrmResult.success) {
-        console.log('✅ Customer data synced with new CRM API successfully');
-      } else {
-        console.warn('⚠️ Failed to sync customer data with new CRM API:', newCrmResult.error);
-      }
-      
-      // For backward compatibility, also send to the old CRM system
-      const oldCrmResult = await sendCustomerToCRM({
+      const crmResult = await sendCustomerToCRM({
         customerName: bookingData.customerName,
         customerEmail: bookingData.customerEmail,
         customerPhone: bookingData.customerPhone,
@@ -275,13 +258,13 @@ export const createBooking = async (bookingData: {
         businessId: crmBusinessId // Use the correct CRM business ID
       });
       
-      if (oldCrmResult.success) {
-        console.log('✅ Customer data sent to old CRM successfully');
+      if (crmResult.success) {
+        console.log('✅ Customer data sent to CRM successfully');
       } else {
-        console.warn('⚠️ Failed to send customer data to old CRM:', oldCrmResult.error);
+        console.warn('⚠️ Failed to send customer data to CRM:', crmResult.error);
       }
     } catch (crmError) {
-      console.warn('⚠️ Error sending customer data to CRM systems:', crmError);
+      console.warn('⚠️ Error sending customer data to CRM:', crmError);
       // Don't throw error - booking was successful, CRM sync is secondary
     }
     

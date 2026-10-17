@@ -31,7 +31,7 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
               Authentication Required
             </CardTitle>
             <CardDescription className="text-gray-600">
-              Please sign in to make a reservation at Amici Coffee
+              Please sign in to make a reservation at Woodman and Olive
             </CardDescription>
           </CardHeader>
           

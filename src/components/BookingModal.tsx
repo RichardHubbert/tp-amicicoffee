@@ -53,7 +53,7 @@ const steps = [
 const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, restaurant, initialDate, initialTime, initialPartySize }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [bookingData, setBookingData] = useState<Partial<BookingData>>({ 
-    restaurantId: '24e2799f-60d5-4e3b-bb30-b8049c9ae56d', // Default The Woodman & Olive restaurant ID
+    restaurantId: restaurant?.id,
     date: undefined 
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,14 +67,14 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, restaurant
   useEffect(() => {
     if (isOpen) {
       const updatedData: Partial<BookingData> = {
-        restaurantId: '24e2799f-60d5-4e3b-bb30-b8049c9ae56d', // Always use default restaurant
+        restaurantId: restaurant?.id,
         date: initialDate ? new Date(initialDate) : undefined,
         startTime: initialTime || '',
         partySize: initialPartySize ? parseInt(initialPartySize) : undefined,
       };
       setBookingData(updatedData);
     }
-  }, [isOpen, initialDate, initialTime, initialPartySize]);
+  }, [isOpen, initialDate, initialTime, initialPartySize, restaurant?.id]);
 
   const handleNext = () => {
     if (currentStep < steps.length) {
@@ -91,7 +91,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, restaurant
   const handleClose = () => {
     setCurrentStep(1);
     setBookingData({ 
-      restaurantId: '24e2799f-60d5-4e3b-bb30-b8049c9ae56d', // Keep default restaurant ID
+      restaurantId: restaurant?.id,
       date: undefined 
     });
     setConfirmationData(null);
@@ -121,7 +121,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, restaurant
   const handleSubmit = async () => {
     setSubmitError(null);
 
-    if (!bookingData.date || !bookingData.startTime || !bookingData.partySize || 
+    if (!bookingData.restaurantId || !bookingData.date || !bookingData.startTime || !bookingData.partySize || 
         !bookingData.customerName || !bookingData.customerEmail) {
       toast({
         title: "Missing Information",
@@ -135,7 +135,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, restaurant
     setIsSubmitting(true);
     try {
       const result = await createBooking({
-        restaurantId: bookingData.restaurantId,
+        restaurantId: bookingData.restaurantId!,
         date: bookingData.date,
         startTime: bookingData.startTime,
         partySize: bookingData.partySize,
@@ -161,7 +161,19 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, restaurant
       
       // Send confirmation email
       console.log('📧 Attempting to send confirmation email...');
-      const emailResult = await sendBookingConfirmationEmail(result);
+      const emailResult = await sendBookingConfirmationEmail({
+        ...result,
+        restaurant: restaurant
+          ? {
+              id: restaurant.id,
+              name: restaurant.name,
+              cuisine: restaurant.cuisine,
+              address: restaurant.address,
+              phone: restaurant.phone,
+              email: restaurant.email,
+            }
+          : result.restaurant,
+      });
       
       if (emailResult.success) {
         toast({
@@ -226,6 +238,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, restaurant
         return (
           <BookingConfirmation
             bookingData={bookingData as BookingData}
+            restaurantName={restaurant?.name}
             onClose={handleClose}
           />
         );
@@ -239,7 +252,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, restaurant
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
-            Reserve Your Table
+            {restaurant?.name ? `Reserve a table at ${restaurant.name}` : 'Reserve Your Table'}
           </DialogTitle>
         </DialogHeader>
 

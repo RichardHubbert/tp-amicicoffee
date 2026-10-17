@@ -100,7 +100,7 @@ const TopFilterBar: React.FC<TopFilterBarProps> = ({
   }, [selectedMonth, selectedYear, selectedDate, onDateChange]);
 
   return (
-    <div className="w-full shadow-lg py-4 px-6 sticky top-0 z-40 border-b border-amber-200 mt-20" style={{ backgroundColor: '#93a098a3' }}>
+    <div className="w-full bg-gradient-to-r from-amber-50 to-orange-50 shadow-lg py-4 px-6 sticky top-0 z-40 border-b border-amber-200 mt-20">
       <div className="max-w-6xl mx-auto">
 
         <div className="flex flex-col md:flex-row items-center justify-center gap-4">

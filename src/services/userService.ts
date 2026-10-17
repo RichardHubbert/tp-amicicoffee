@@ -153,7 +153,7 @@ export const inviteUser = async (email: string, role: UserRole, fullName?: strin
   // First, create the auth user
   const { data: authData, error: authError } = await supabase.auth.admin.createUser({
     email,
-    password: 'temp-password-123', // User will need to reset this
+    password: 'Finnegan', // User will need to reset this
     email_confirm: true,
     user_metadata: {
       full_name: fullName,
@@ -182,8 +182,8 @@ export const inviteUser = async (email: string, role: UserRole, fullName?: strin
   return await createUserProfile(profileData);
 };
 
-// Get all bookings for Woodman & Olive (for customer analysis)
-export const getWoodmanAndOliveBookings = async (): Promise<any[]> => {
+// Get all bookings for Amici Coffee (for customer analysis)
+export const getAmiciCoffeeBookings = async (): Promise<any[]> => {
   const { data, error } = await supabase
     .from('bookings')
     .select('*')
@@ -191,7 +191,7 @@ export const getWoodmanAndOliveBookings = async (): Promise<any[]> => {
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching Woodman & Olive bookings:', error);
+    console.error('Error fetching Amici Coffee bookings:', error);
     throw error;
   }
 
@@ -216,8 +216,8 @@ export const getCustomerHistory = async (customerEmail: string): Promise<any[]> 
   return data || [];
 };
 
-// Get unique customers for Woodman & Olive
-export const getWoodmanAndOliveCustomers = async (): Promise<any[]> => {
+// Get unique customers for Amici Coffee
+export const getAmiciCoffeeCustomers = async (): Promise<any[]> => {
   const { data, error } = await supabase
     .from('bookings')
     .select('customer_email, customer_name, customer_phone')
@@ -225,7 +225,7 @@ export const getWoodmanAndOliveCustomers = async (): Promise<any[]> => {
     .neq('status', 'cancelled');
 
   if (error) {
-    console.error('Error fetching Woodman & Olive customers:', error);
+    console.error('Error fetching Amici Coffee customers:', error);
     throw error;
   }
 

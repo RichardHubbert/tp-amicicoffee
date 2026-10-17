@@ -9,9 +9,10 @@ import { useNavigate } from 'react-router-dom';
 
 interface NavigationHeaderProps {
   onBookingClick?: () => void;
+  brandName?: string;
 }
 
-const NavigationHeader = ({ onBookingClick }: NavigationHeaderProps) => {
+const NavigationHeader = ({ onBookingClick, brandName = 'Woodman and Olive' }: NavigationHeaderProps) => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -42,14 +43,14 @@ const NavigationHeader = ({ onBookingClick }: NavigationHeaderProps) => {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 w-full z-50 border-b flex items-center justify-between px-4 py-3" style={{ backgroundColor: '#93a098a3' }}>
+    <div className="fixed top-0 left-0 right-0 w-full z-50 bg-white border-b flex items-center justify-between px-4 py-3">
       {/* Logo/Brand */}
       <div className="flex-1 flex items-center gap-2">
         {/* TP Logo */}
         <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center shadow-md">
           <span className="text-white font-bold text-lg select-none">TP</span>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 ml-2">Woodman & Olive</h1>
+        <h1 className="text-2xl font-bold text-gray-900 ml-2">{brandName}</h1>
       </div>
       
       {/* Right side navigation */}
@@ -57,6 +58,7 @@ const NavigationHeader = ({ onBookingClick }: NavigationHeaderProps) => {
         {/* Mobile Menu (only visible on mobile) */}
         <MobileMenu 
           onBookingClick={onBookingClick}
+          brandName={brandName}
         />
         
         {/* Desktop Navigation (hidden on mobile) */}
