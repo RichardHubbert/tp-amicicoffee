@@ -21,6 +21,7 @@ import BookingConfirmation from '@/components/BookingConfirmation';
 import { createBooking } from '@/services/supabaseBookingService';
 import { sendBookingConfirmationEmail } from '@/services/emailService';
 import { fetchRestaurants, Restaurant } from '@/services/restaurantService';
+import { siteConfig, getPrimaryColorClass, getHoverColorClass } from '@/config/site';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -53,7 +54,7 @@ const steps = [
 const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, restaurant, initialDate, initialTime, initialPartySize }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [bookingData, setBookingData] = useState<Partial<BookingData>>({ 
-    restaurantId: '24e2799f-60d5-4e3b-bb30-b8049c9ae56d', // Default Amici Coffee restaurant ID
+    restaurantId: siteConfig.business.restaurantId,
     date: undefined 
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,7 +68,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, restaurant
   useEffect(() => {
     if (isOpen) {
       const updatedData: Partial<BookingData> = {
-        restaurantId: '24e2799f-60d5-4e3b-bb30-b8049c9ae56d', // Always use default restaurant
+        restaurantId: siteConfig.business.restaurantId,
         date: initialDate ? new Date(initialDate) : undefined,
         startTime: initialTime || '',
         partySize: initialPartySize ? parseInt(initialPartySize) : undefined,
@@ -91,7 +92,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, restaurant
   const handleClose = () => {
     setCurrentStep(1);
     setBookingData({ 
-      restaurantId: '24e2799f-60d5-4e3b-bb30-b8049c9ae56d', // Keep default restaurant ID
+      restaurantId: siteConfig.business.restaurantId,
       date: undefined 
     });
     setConfirmationData(null);
@@ -254,7 +255,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, restaurant
               <div key={step.id} className="flex items-center">
                 <div className={`
                   w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium
-                  ${isActive ? 'bg-amber-600 text-white' : 
+                  ${isActive ? `${getPrimaryColorClass('bg')} text-white` : 
                     isCompleted ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-600'}
                 `}>
                   <Icon className="h-5 w-5" />
@@ -304,7 +305,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, restaurant
               <Button
                 onClick={handleSubmit}
                 disabled={!canProceed() || isSubmitting}
-                className="bg-amber-600 hover:bg-amber-700 flex items-center"
+                className={`${getPrimaryColorClass('bg')} ${getHoverColorClass('bg')} flex items-center`}
               >
                 {isSubmitting ? 'Creating Booking...' : 'Confirm Booking'}
               </Button>
@@ -312,7 +313,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, restaurant
               <Button
                 onClick={handleNext}
                 disabled={!canProceed()}
-                className="bg-amber-600 hover:bg-amber-700 flex items-center"
+                className={`${getPrimaryColorClass('bg')} ${getHoverColorClass('bg')} flex items-center`}
               >
                 Next
                 <ChevronRight className="h-4 w-4 ml-1" />

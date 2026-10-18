@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, Calendar, Clock, Users, Mail, Phone, MessageSquare, MapPin } from 'lucide-react';
 import { format, parseISO, addMinutes } from 'date-fns';
 import { BookingData } from '@/components/BookingModal';
+import { siteConfig, getPrimaryColorClass, getHoverColorClass } from '@/config/site';
 
 interface BookingConfirmationProps {
   bookingData: BookingData;
@@ -95,7 +96,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({ bookingData, 
               <MapPin className="h-5 w-5 text-green-600" />
               <div>
                 <p className="font-medium text-green-800">Location</p>
-                <p className="text-green-700">Amici Coffee</p>
+                <p className="text-green-700">{siteConfig.business.name}</p>
               </div>
             </div>
           </div>
@@ -136,7 +137,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({ bookingData, 
         <ul className="text-sm text-amber-700 space-y-1">
           <li>• A confirmation email will be sent to {bookingData.customerEmail}</li>
           <li>• Please arrive on time for your reservation</li>
-          <li>• Contact us at (555) 123-4567 if you need to modify your booking</li>
+          <li>• Contact us at {siteConfig.contact.phone} if you need to modify your booking</li>
           <li>• Cancellations should be made at least 2 hours in advance</li>
         </ul>
       </div>
@@ -144,7 +145,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({ bookingData, 
       <div className="flex flex-col sm:flex-row gap-3">
         <Button
           onClick={onClose}
-          className="flex-1 bg-amber-600 hover:bg-amber-700"
+          className={`flex-1 ${getPrimaryColorClass('bg')} ${getHoverColorClass('bg')}`}
         >
           Done
         </Button>

@@ -1,0 +1,11 @@
+# Git merge strategy for client-specific files
+# When merging updates from core, these files should keep "ours" (client version)
+
+# Client-specific configuration (never merge from core)
+src/config/site.ts merge=ours
+
+# Client-specific brand assets (never merge from core)
+public/brand/** merge=ours
+
+# Environment files are client-specific
+.env merge=ours
