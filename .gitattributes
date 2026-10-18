@@ -1,0 +1,22 @@
+# Git merge strategy for client-specific files
+# When merging updates from core, these files should keep "ours" (client version)
+
+# Client-specific configuration (never merge from core)
+src/config/site.ts merge=ours
+
+# Client-specific brand assets (never merge from core)
+public/brand/** merge=ours
+
+# Environment files are client-specific
+.env merge=ours
+
+# Client-specific index.html with custom meta tags
+index.html merge=ours
+
+# Client-specific Supabase migrations
+supabase/migrations/*setup_amici_coffee*.sql merge=ours
+supabase/migrations/*amici*.sql merge=ours
+
+# CRM test components (client-specific)
+src/components/CRMTestButton.tsx merge=ours
+src/components/NewCustomerCRMTestButton.tsx merge=ours
