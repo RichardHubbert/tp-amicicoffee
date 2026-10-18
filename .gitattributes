@@ -9,3 +9,14 @@ public/brand/** merge=ours
 
 # Environment files are client-specific
 .env merge=ours
+
+# Client-specific index.html with custom meta tags
+index.html merge=ours
+
+# Client-specific Supabase migrations
+supabase/migrations/*setup_amici_coffee*.sql merge=ours
+supabase/migrations/*amici*.sql merge=ours
+
+# CRM test components (client-specific)
+src/components/CRMTestButton.tsx merge=ours
+src/components/NewCustomerCRMTestButton.tsx merge=ours
