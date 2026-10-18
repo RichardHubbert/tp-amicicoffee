@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, SUPABASE_URL } from '@/integrations/supabase/client';
 import { Booking } from './supabaseBookingService';
+import { siteConfig } from '@/config/site';
 
 type EmailPayload = {
   to_name: string;
@@ -62,7 +63,7 @@ export const sendBookingConfirmationEmail = async (booking: Booking): Promise<{ 
       booking_date_time: formatBookingDateTime(booking.booking_date, booking.start_time),
       party_size: booking.party_size,
       special_requests: booking.special_requests || 'None',
-      restaurant_name: booking.restaurant?.name || 'Woodman and Olive',
+      restaurant_name: booking.restaurant?.name || siteConfig.business.name,
       restaurant_address: booking.restaurant?.address || '',
       restaurant_phone: booking.restaurant?.phone || '',
       restaurant_email: booking.restaurant?.email || '',
@@ -82,7 +83,7 @@ export const testEmailService = async (): Promise<{ success: boolean; error?: st
       booking_date_time: 'Saturday, October 17th, 2026 at 19:00',
       party_size: 2,
       special_requests: 'This is a test reservation email.',
-      restaurant_name: 'Woodman and Olive',
+      restaurant_name: siteConfig.business.name,
       restaurant_address: 'Address to be confirmed',
       restaurant_phone: '',
       restaurant_email: '',

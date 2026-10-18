@@ -4,13 +4,14 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { siteConfig } from '@/config/site';
 
 interface MobileMenuProps {
   onBookingClick?: () => void;
   brandName?: string;
 }
 
-const MobileMenu = ({ onBookingClick, brandName = 'Woodman and Olive' }: MobileMenuProps) => {
+const MobileMenu = ({ onBookingClick, brandName = siteConfig.business.name }: MobileMenuProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const { user, signOut } = useAuth();
   const { toast } = useToast();

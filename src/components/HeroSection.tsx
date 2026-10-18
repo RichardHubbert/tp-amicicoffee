@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Users, Clock, Star } from 'lucide-react';
+import { siteConfig, replaceTokens } from '@/config/site';
 
 interface HeroSectionProps {
   onBookTable: () => void;
@@ -9,11 +10,13 @@ interface HeroSectionProps {
   imageUrl?: string;
 }
 
-const HeroSection: React.FC<HeroSectionProps> = ({ onBookTable, restaurantName = 'Woodman and Olive', imageUrl }) => {
+const HeroSection: React.FC<HeroSectionProps> = ({ onBookTable, restaurantName = siteConfig.business.name, imageUrl }) => {
   const hasImage = Boolean(imageUrl);
+  const { primary, background, backgroundShade } = siteConfig.branding.colors;
+  const bgGradient = `bg-gradient-to-br from-${primary}-50 to-${background}-${backgroundShade}`;
 
   return (
-    <section className={`relative overflow-hidden py-20 ${hasImage ? 'min-h-[32rem]' : 'bg-gradient-to-br from-amber-50 to-orange-100'}`}>
+    <section className={`relative overflow-hidden py-20 ${hasImage ? 'min-h-[32rem]' : bgGradient}`}>
       {hasImage && (
         <>
           <img src={imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
@@ -23,55 +26,36 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onBookTable, restaurantName =
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h1 className={`text-4xl md:text-6xl font-bold mb-6 ${hasImage ? 'text-white' : 'text-gray-900'}`}>
-            Welcome to{' '}
-            <span className={hasImage ? 'text-amber-300' : 'text-amber-600'}>{restaurantName}</span>
+            {siteConfig.features.hero.welcome}{' '}
+            <span className={hasImage ? `text-${primary}-${siteConfig.branding.colors.light}` : `text-${primary}-${siteConfig.branding.colors.primaryShade}`}>{restaurantName}</span>
           </h1>
           <p className={`text-xl mb-8 max-w-3xl mx-auto ${hasImage ? 'text-white/90' : 'text-gray-600'}`}>
-            Book a table at {restaurantName}. Choose your date, time, and party size.
+            {replaceTokens(siteConfig.features.hero.subtitle, { name: restaurantName })}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <Button 
               onClick={onBookTable}
               size="lg" 
-              className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 text-lg"
+              className={`bg-${primary}-${siteConfig.branding.colors.primaryShade} hover:bg-${primary}-${siteConfig.branding.colors.hover} text-white px-8 py-3 text-lg`}
             >
-              Book a Table
+              {siteConfig.features.hero.ctaText}
             </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-            <Card className="text-center">
-              <CardContent className="pt-6">
-                <Calendar className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-                <h3 className="font-semibold text-gray-900">Easy Booking</h3>
-                <p className="text-sm text-gray-600">Book your table in seconds</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="text-center">
-              <CardContent className="pt-6">
-                <Users className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-                <h3 className="font-semibold text-gray-900">Group Friendly</h3>
-                <p className="text-sm text-gray-600">Perfect for any party size</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="text-center">
-              <CardContent className="pt-6">
-                <Clock className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-                <h3 className="font-semibold text-gray-900">Flexible Times</h3>
-                <p className="text-sm text-gray-600">Choose your preferred time</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="text-center">
-              <CardContent className="pt-6">
-                <Star className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-                <h3 className="font-semibold text-gray-900">Premium Service</h3>
-                <p className="text-sm text-gray-600">Exceptional dining experience</p>
-              </CardContent>
-            </Card>
+            {siteConfig.features.cards.map((card, index) => {
+              const IconComponent = { Calendar, Users, Clock, Star }[card.icon as keyof typeof import('lucide-react')];
+              return (
+                <Card key={index} className="text-center">
+                  <CardContent className="pt-6">
+                    {IconComponent && <IconComponent className={`h-8 w-8 text-${primary}-${siteConfig.branding.colors.primaryShade} mx-auto mb-2`} />}
+                    <h3 className="font-semibold text-gray-900">{card.title}</h3>
+                    <p className="text-sm text-gray-600">{card.description}</p>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </div>

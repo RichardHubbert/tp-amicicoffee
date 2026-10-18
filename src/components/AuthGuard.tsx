@@ -3,6 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LogIn, UserPlus } from 'lucide-react';
+import { siteConfig } from '@/config/site';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -31,7 +32,7 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
               Authentication Required
             </CardTitle>
             <CardDescription className="text-gray-600">
-              Please sign in to make a reservation at Woodman and Olive
+              Please sign in to make a reservation at {siteConfig.business.name}
             </CardDescription>
           </CardHeader>
           
