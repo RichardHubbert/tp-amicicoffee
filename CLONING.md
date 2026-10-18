@@ -291,7 +291,7 @@ Before going live, ensure:
 
 ## 🐛 Found an Issue?
 
-If you encounter problems with the cloning process itself (not client-specific issues), please open an issue in the core tp-woodman repository.
+If you encounter problems with the cloning process itself (not client-specific issues), please open an issue in the core tp-core repository.
 
 ---
 

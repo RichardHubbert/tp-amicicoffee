@@ -4,7 +4,7 @@ This document explains how to receive feature updates and bug fixes from the cor
 
 ## Overview
 
-This client site (`tp-amicicoffee`) is based on the core repository `tp-woodman`. The core repo contains shared functionality and features that benefit all client sites. This guide shows you how to pull those updates into your client site safely.
+This client site (`tp-amicicoffee`) is based on the core repository `tp-core`. The core repo contains shared functionality and features that benefit all client sites. This guide shows you how to pull those updates into your client site safely.
 
 ## Prerequisites
 
@@ -25,7 +25,7 @@ If this is your first time updating from core, you need to link your repository 
 cd /path/to/tp-amicicoffee
 
 # Add the core repository as a remote named 'core'
-git remote add core https://github.com/RichardHubbert/tp-woodman.git
+git remote add core https://github.com/RichardHubbert/tp-core.git
 
 # Verify the remote was added
 git remote -v
@@ -33,8 +33,8 @@ git remote -v
 
 You should see output like:
 ```
-core    https://github.com/RichardHubbert/tp-woodman.git (fetch)
-core    https://github.com/RichardHubbert/tp-woodman.git (push)
+core    https://github.com/RichardHubbert/tp-core.git (fetch)
+core    https://github.com/RichardHubbert/tp-core.git (push)
 origin  https://github.com/yourusername/tp-amicicoffee.git (fetch)
 origin  https://github.com/yourusername/tp-amicicoffee.git (push)
 ```
@@ -245,7 +245,7 @@ git push origin main
 
 If you encounter problems after updating from core:
 
-1. **Check the core repository issues**: https://github.com/RichardHubbert/tp-woodman/issues
+1. **Check the core repository issues**: https://github.com/RichardHubbert/tp-core/issues
 2. **Document the problem**: Include error messages, browser console logs, and steps to reproduce
 3. **Open an issue** in the core repository if it's not client-specific
 4. **Contact support** if it's specific to your client site
@@ -272,7 +272,7 @@ git commit -m "Update specific file from core"
 
 ## Questions?
 
-- **Core repository**: https://github.com/RichardHubbert/tp-woodman
+- **Core repository**: https://github.com/RichardHubbert/tp-core
 - **Documentation**: See `README.md` and `CLONING.md`
 - **Support**: Contact your development team
 

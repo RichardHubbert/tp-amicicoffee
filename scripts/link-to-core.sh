@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Link this client repository to the core tp-woodman repository
+# Link this client repository to the core tp-core repository
 # This script adds the core repository as a git remote for receiving updates
 
 set -e
 
-CORE_REPO="https://github.com/RichardHubbert/tp-woodman.git"
+CORE_REPO="https://github.com/RichardHubbert/tp-core.git"
 REMOTE_NAME="core"
 
 echo "🔗 Linking to core repository..."

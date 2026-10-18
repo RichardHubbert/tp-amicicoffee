@@ -1,6 +1,6 @@
 # Migration Summary: Config-Driven Layout
 
-This document summarizes the migration of tp-amicicoffee to the config-driven layout used by the core tp-woodman repository.
+This document summarizes the migration of tp-amicicoffee to the config-driven layout used by the core tp-core repository.
 
 ## Date
 October 18, 2026
