@@ -2,24 +2,22 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Users, Clock, Star } from 'lucide-react';
-import { siteConfig, getPrimaryColorClass, getHoverColorClass } from '@/config/site';
+import { siteConfig } from '@/config/site';
 
 interface HeroSectionProps {
   onBookTable: () => void;
 }
 
 const HeroSection: React.FC<HeroSectionProps> = ({ onBookTable }) => {
-  const { business, branding, features } = siteConfig;
-  const bgClass = `bg-gradient-to-br from-${branding.colors.background}-${branding.colors.backgroundShade} to-${branding.colors.backgroundTo}-${branding.colors.backgroundToShade}`;
-  const textColorClass = `text-${branding.colors.primary}-${branding.colors.primaryShade}`;
+  const { business, features } = siteConfig;
   
   return (
-    <section className={`relative ${bgClass} py-20`}>
+    <section className="relative bg-gradient-to-br from-amber-50 to-orange-100 py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
             {features.hero.welcome}{' '}
-            <span className={textColorClass}>{business.name}</span>
+            <span className="text-amber-600">{business.name}</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
             {features.hero.subtitle}
@@ -29,7 +27,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onBookTable }) => {
             <Button 
               onClick={onBookTable}
               size="lg" 
-              className={`${getPrimaryColorClass('bg')} ${getHoverColorClass('bg')} text-white px-8 py-3 text-lg`}
+              className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 text-lg"
             >
               {features.hero.ctaText}
             </Button>
@@ -45,7 +43,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onBookTable }) => {
               return (
                 <Card key={index} className="text-center">
                   <CardContent className="pt-6">
-                    <IconComponent className={`h-8 w-8 ${textColorClass} mx-auto mb-2`} />
+                    <IconComponent className="h-8 w-8 text-amber-600 mx-auto mb-2" />
                     <h3 className="font-semibold text-gray-900">{card.title}</h3>
                     <p className="text-sm text-gray-600">{card.description}</p>
                   </CardContent>

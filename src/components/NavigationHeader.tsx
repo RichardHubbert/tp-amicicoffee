@@ -42,15 +42,14 @@ const NavigationHeader = ({ onBookingClick }: NavigationHeaderProps) => {
     navigate('/admin');
   };
 
-  const { business, branding } = siteConfig;
-  const badgeBgClass = `bg-${branding.colors.primary}-${branding.colors.lighter}`;
+  const { business } = siteConfig;
 
   return (
     <div className="fixed top-0 left-0 right-0 w-full z-50 bg-white border-b flex items-center justify-between px-4 py-3">
       {/* Logo/Brand */}
       <div className="flex-1 flex items-center gap-2">
         {/* Logo Badge */}
-        <div className={`w-10 h-10 rounded-full ${badgeBgClass} flex items-center justify-center shadow-md`}>
+        <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center shadow-md">
           <span className="text-white font-bold text-lg select-none">{business.logoText}</span>
         </div>
         <h1 className="text-2xl font-bold text-gray-900 ml-2">{business.name}</h1>
