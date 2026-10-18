@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Restaurant, createRestaurant, updateRestaurant } from '@/services/restaurantService';
+import { Restaurant, RestaurantCategory, createRestaurant, fetchRestaurantCategories, updateRestaurant } from '@/services/restaurantService';
 import { supabase } from '@/integrations/supabase/client';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
 
@@ -25,20 +25,29 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [isUploading, setIsUploading] = useState(false);
+  const [categories, setCategories] = useState<RestaurantCategory[]>([]);
   const [formData, setFormData] = useState({
     name: '',
     address: '',
     cuisine: '',
+    category_id: '',
     rating: '',
     image_url: '',
     phone: '',
     email: '',
     description: '',
     is_active: true,
+    is_default: false,
     county: '',
   });
 
   const isEditing = !!restaurant;
+
+  useEffect(() => {
+    fetchRestaurantCategories()
+      .then(setCategories)
+      .catch((error) => console.error('Error loading categories:', error));
+  }, []);
 
   useEffect(() => {
     if (restaurant) {
@@ -46,12 +55,14 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
         name: restaurant.name || '',
         address: restaurant.address || '',
         cuisine: restaurant.cuisine || '',
+        category_id: restaurant.category_id || '',
         rating: restaurant.rating?.toString() || '',
         image_url: restaurant.image_url || '',
         phone: restaurant.phone || '',
         email: restaurant.email || '',
         description: restaurant.description || '',
         is_active: restaurant.is_active ?? true,
+        is_default: restaurant.is_default ?? false,
         county: restaurant.county || '',
       });
       if (restaurant.image_url) {
@@ -176,8 +187,12 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
         }
       }
 
+      const selectedCategory = categories.find((category) => category.id === formData.category_id);
       const restaurantData = {
         ...formData,
+        category_id: formData.category_id || null,
+        cuisine: selectedCategory?.name || formData.cuisine,
+        county: formData.county || null,
         image_url: imageUrl,
         rating: formData.rating ? parseFloat(formData.rating) : null
       };
@@ -221,7 +236,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle>
-          {isEditing ? 'Edit Restaurant' : 'Add New Restaurant'}
+          {isEditing ? 'Edit details' : 'Add New Restaurant'}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -238,31 +253,6 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="cuisine">Cuisine Type *</Label>
-              <Input
-                id="cuisine"
-                value={formData.cuisine}
-                onChange={(e) => handleInputChange('cuisine', e.target.value)}
-                placeholder="e.g., Italian, Japanese, Fine Dining"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="county">County *</Label>
-              <select
-                id="county"
-                value={formData.county}
-                onChange={e => handleInputChange('county', e.target.value)}
-                required
-                className="border rounded px-3 py-2 w-full"
-              >
-                <option value="">Select county</option>
-                <option value="Bedfordshire">Bedfordshire</option>
-                <option value="Cambridgeshire">Cambridgeshire</option>
-                <option value="Hertfordshire">Hertfordshire</option>
-              </select>
-            </div>
           </div>
 
           <div className="space-y-2">
@@ -379,16 +369,6 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
             />
           </div>
 
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="is_active"
-              checked={formData.is_active}
-              onChange={(e) => handleInputChange('is_active', e.target.checked.toString())}
-              className="rounded"
-            />
-            <Label htmlFor="is_active">Active</Label>
-          </div>
 
           <div className="flex justify-end space-x-2">
             <Button type="button" variant="outline" onClick={onCancel}>

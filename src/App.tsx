@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RestaurantProvider } from "@/contexts/RestaurantContext";
+import { siteConfig } from "@/config/site";
 import Index from "./pages/Index";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
@@ -14,12 +15,16 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-// Get the basename from the current pathname
+// Get the basename from the current pathname or config
 const getBasename = () => {
+  const configBasePath = siteConfig.urls.basePath;
   const pathname = window.location.pathname;
-  if (pathname.startsWith('/amicicoffee')) {
-    return '/amicicoffee';
+  
+  // Check if current path starts with the configured base path
+  if (configBasePath && configBasePath !== '/' && pathname.startsWith(configBasePath)) {
+    return configBasePath;
   }
+  
   return '/';
 };
 
