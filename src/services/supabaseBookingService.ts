@@ -9,6 +9,12 @@ export interface Table {
   section: string;
 }
 
+export interface TableInput {
+  name: string;
+  capacity: number;
+  section: string;
+}
+
 export interface Booking {
   id: string;
   table_id: string;
@@ -321,6 +327,67 @@ export const getNextReservationForTable = (tableId: string, allBookings: Booking
     });
   
   return futureBookings.length > 0 ? futureBookings[0] : null;
+};
+
+export const createTable = async (input: TableInput): Promise<Table> => {
+  const { data, error } = await supabase
+    .from('tables')
+    .insert({
+      name: input.name.trim(),
+      capacity: input.capacity,
+      section: input.section.trim(),
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error creating table:', error);
+    throw error;
+  }
+
+  return data;
+};
+
+export const updateTable = async (id: string, input: TableInput): Promise<Table> => {
+  const { data, error } = await supabase
+    .from('tables')
+    .update({
+      name: input.name.trim(),
+      capacity: input.capacity,
+      section: input.section.trim(),
+    })
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating table:', error);
+    throw error;
+  }
+
+  return data;
+};
+
+export const deleteTable = async (id: string): Promise<void> => {
+  const { error: bookingError } = await supabase
+    .from('bookings')
+    .delete()
+    .eq('table_id', id);
+
+  if (bookingError) {
+    console.error('Error deleting bookings for table:', bookingError);
+    throw bookingError;
+  }
+
+  const { error } = await supabase
+    .from('tables')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error deleting table:', error);
+    throw error;
+  }
 };
 
 // Delete a booking by ID

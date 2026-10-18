@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { fetchTables, fetchAllBookings, getNextReservationForTable, type Table as TableType, type Booking, updateBooking, deleteBooking } from '@/services/supabaseBookingService';
+import { fetchTables, fetchAllBookings, getNextReservationForTable, type Table as TableType, type Booking, updateBooking, deleteBooking, createTable, updateTable, deleteTable } from '@/services/supabaseBookingService';
 import { useAdmin } from '@/hooks/useAdmin';
 import { Dialog, DialogContent, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { fetchRestaurants, Restaurant } from '@/services/restaurantService';
@@ -30,6 +30,11 @@ const AdminDashboard = () => {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [editError, setEditError] = useState<string | null>(null);
   const [emailTestResult, setEmailTestResult] = useState<string | null>(null);
+  const [tableDialog, setTableDialog] = useState<TableType | 'add' | null>(null);
+  const [deletingTable, setDeletingTable] = useState<TableType | null>(null);
+  const [tableForm, setTableForm] = useState({ name: '', capacity: 2, section: '' });
+  const [tableError, setTableError] = useState<string | null>(null);
+  const [tableActionLoading, setTableActionLoading] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -91,6 +96,74 @@ const AdminDashboard = () => {
   const getTableStatus = (table: TableType) => {
     const tableBookings = dayBookings.filter(booking => booking.table_id === table.id);
     return tableBookings;
+  };
+
+  const handleAddTableClick = () => {
+    setTableForm({ name: '', capacity: 2, section: '' });
+    setTableError(null);
+    setTableDialog('add');
+  };
+  const handleEditTableClick = (table: TableType) => {
+    setTableForm({ name: table.name, capacity: table.capacity, section: table.section });
+    setTableError(null);
+    setTableDialog(table);
+  };
+  const handleTableFormChange = (field: 'name' | 'section', value: string) => {
+    setTableForm(form => ({ ...form, [field]: value }));
+  };
+  const handleTableSave = async () => {
+    const name = tableForm.name.trim();
+    const section = tableForm.section.trim();
+    const capacity = Number(tableForm.capacity);
+
+    if (!name || !section) {
+      setTableError('Name and section are required.');
+      return;
+    }
+    if (!Number.isInteger(capacity) || capacity < 1) {
+      setTableError('Capacity must be at least 1.');
+      return;
+    }
+
+    setTableActionLoading(true);
+    setTableError(null);
+    try {
+      if (tableDialog === 'add') {
+        await createTable({ name, capacity, section });
+      } else if (tableDialog) {
+        await updateTable(tableDialog.id, { name, capacity, section });
+      }
+      setTables(await fetchTables());
+      setTableDialog(null);
+    } catch (err) {
+      setTableError(err instanceof Error ? err.message : 'Failed to save table.');
+    } finally {
+      setTableActionLoading(false);
+    }
+  };
+  const handleDeleteTableConfirm = async () => {
+    if (!deletingTable) return;
+    setTableActionLoading(true);
+    setTableError(null);
+    try {
+      await deleteTable(deletingTable.id);
+      const [tablesData, bookingsData] = await Promise.all([
+        fetchTables(),
+        fetchAllBookings(),
+      ]);
+      setTables(tablesData);
+      setAllBookings(bookingsData);
+      setDeletingTable(null);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete table.';
+      setTableError(
+        message.toLowerCase().includes('foreign key')
+          ? 'Could not delete this table because its bookings are still there. Sign in and try again.'
+          : message
+      );
+    } finally {
+      setTableActionLoading(false);
+    }
   };
 
   const handleEditClick = (booking: Booking) => {
@@ -338,10 +411,18 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>Table Status Overview</CardTitle>
-              <CardDescription>Current status of all tables for {format(selectedDate, 'MMM do, yyyy')}</CardDescription>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <CardTitle>Table Status Overview</CardTitle>
+                  <CardDescription>Current status of all tables for {format(selectedDate, 'MMM do, yyyy')}</CardDescription>
+                </div>
+                <Button size="sm" onClick={handleAddTableClick}>Add table</Button>
+              </div>
             </CardHeader>
             <CardContent>
+              {tables.length === 0 ? (
+                <p className="text-sm text-gray-500">No tables yet. Add one to start taking bookings.</p>
+              ) : null}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {tables.map(table => {
                   const bookings = getTableStatus(table);
@@ -371,6 +452,10 @@ const AdminDashboard = () => {
                         <div className="flex items-center space-x-1">
                           <MapPin className="h-4 w-4" />
                           <span>Section: {table.section}</span>
+                        </div>
+                        <div className="flex gap-2 pt-2">
+                          <Button size="sm" variant="secondary" onClick={() => handleEditTableClick(table)}>Edit</Button>
+                          <Button size="sm" variant="destructive" onClick={() => { setTableError(null); setDeletingTable(table); }}>Delete</Button>
                         </div>
                         
                         {/* Next Reservation Info */}
@@ -623,6 +708,61 @@ const AdminDashboard = () => {
             <Button onClick={() => setEditingBooking(null)} variant="secondary" disabled={actionLoading}>Cancel</Button>
             <Button onClick={handleEditSave} variant="default" disabled={actionLoading}>
               {actionLoading ? 'Saving...' : 'Save'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={tableDialog !== null} onOpenChange={open => { if (!open) setTableDialog(null); }}>
+        <DialogContent className="max-w-md">
+          <DialogTitle>{tableDialog === 'add' ? 'Add table' : 'Edit table'}</DialogTitle>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+              <input
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                value={tableForm.name}
+                onChange={e => handleTableFormChange('name', e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Capacity</label>
+              <input
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                type="number"
+                min="1"
+                value={tableForm.capacity}
+                onChange={e => setTableForm(form => ({ ...form, capacity: Number(e.target.value) }))}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Section</label>
+              <input
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                value={tableForm.section}
+                onChange={e => handleTableFormChange('section', e.target.value)}
+              />
+            </div>
+          </div>
+          {tableError && <div className="text-red-600 text-sm mt-2">{tableError}</div>}
+          <DialogFooter>
+            <Button onClick={() => setTableDialog(null)} variant="secondary" disabled={tableActionLoading}>Cancel</Button>
+            <Button onClick={handleTableSave} disabled={tableActionLoading}>
+              {tableActionLoading ? 'Saving...' : 'Save'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={!!deletingTable} onOpenChange={open => { if (!open) setDeletingTable(null); }}>
+        <DialogContent>
+          <DialogTitle>Delete table</DialogTitle>
+          <p>
+            Delete {deletingTable?.name}? This also removes its bookings.
+          </p>
+          {tableError && <div className="text-red-600 text-sm mt-2">{tableError}</div>}
+          <DialogFooter>
+            <Button onClick={() => setDeletingTable(null)} variant="secondary" disabled={tableActionLoading}>Cancel</Button>
+            <Button onClick={handleDeleteTableConfirm} variant="destructive" disabled={tableActionLoading}>
+              {tableActionLoading ? 'Deleting...' : 'Delete'}
             </Button>
           </DialogFooter>
         </DialogContent>
