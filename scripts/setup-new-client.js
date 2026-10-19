@@ -237,8 +237,8 @@ export const siteConfig = {
   // EMAIL CONFIGURATION
   // ============================================
   email: {
-    fromName: "${businessName}",
-    defaultFromEmail: "onboarding@resend.dev",
+    fromName: "Table Pilot",
+    defaultFromEmail: "bookings@tablepilot.co.uk",
   },
 } as const;
 

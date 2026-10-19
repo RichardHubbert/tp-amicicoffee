@@ -166,9 +166,9 @@ export const siteConfig = {
   // ============================================
   email: {
     // Default "from" name for booking confirmations
-    // Actual email address is set in Supabase secrets (RESEND_FROM)
-    fromName: "Amici Coffee",
-    defaultFromEmail: "onboarding@resend.dev",  // Fallback only
+    // Actual email address is set in Supabase Edge Function
+    fromName: "Table Pilot",
+    defaultFromEmail: "bookings@tablepilot.co.uk",
   },
 
   // ============================================

@@ -220,12 +220,8 @@ Deno.serve(async (req) => {
     const requests = body.special_requests?.trim() || "None";
     const bookingId = body.booking_id?.trim() || "";
     
-    // Use "Table Pilot" as sender display name, keep the configured from address
-    const fromAddress = Deno.env.get("RESEND_FROM") || "onboarding@resend.dev";
-    // Extract just the email if it's in format "Name <email>"
-    const emailMatch = fromAddress.match(/<(.+)>/);
-    const cleanEmail = emailMatch ? emailMatch[1] : fromAddress;
-    const from = `Table Pilot <${cleanEmail}>`;
+    // Use Table Pilot sender address
+    const from = "Table Pilot <bookings@tablepilot.co.uk>";
 
     const message = buildBookingEmail({
       restaurantName: restaurantName || "the restaurant",
