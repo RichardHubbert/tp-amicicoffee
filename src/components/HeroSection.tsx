@@ -19,6 +19,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onBookTable }) => {
             {features.hero.welcome}{' '}
             <span className="text-amber-600">{business.name}</span>
           </h1>
+          <p className="text-lg text-gray-500 mb-2">{business.tagline}</p>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
             {features.hero.subtitle}
           </p>

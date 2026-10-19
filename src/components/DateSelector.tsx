@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { format, addDays, isSameDay, startOfToday } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
+import { siteConfig } from '@/config/site';
 
 interface DateSelectorProps {
   selectedDate?: Date;
@@ -76,7 +76,7 @@ const DateSelector: React.FC<DateSelectorProps> = ({ selectedDate, onDateSelect 
       )}
 
       <div className="text-sm text-gray-500 text-center space-y-1 mt-4 p-3 bg-gray-50 rounded-md">
-        <p>• Restaurant hours: 11:00 AM - 10:00 PM daily</p>
+        <p>• {siteConfig.hours.display}</p>
         <p>• Last booking available at 7:30 PM</p>
         <p>• Each reservation is for 2.5 hours</p>
       </div>

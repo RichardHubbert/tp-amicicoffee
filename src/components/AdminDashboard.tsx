@@ -13,6 +13,7 @@ import { testEmailService } from '@/services/emailService';
 import CRMTestButton from '@/components/CRMTestButton';
 import NewCustomerCRMTestButton from '@/components/NewCustomerCRMTestButton';
 import DashboardRestaurants from '@/components/DashboardRestaurants';
+import { siteConfig } from '@/config/site';
 
 const AdminDashboard = () => {
   const { isAdmin } = useAdmin();
@@ -37,16 +38,26 @@ const AdminDashboard = () => {
       try {
         setLoading(true);
         console.log('Loading admin dashboard data...');
+        
+        // Fetch all data
         const [tablesData, bookingsData, restaurantsData] = await Promise.all([
           fetchTables(),
           fetchAllBookings(),
           fetchRestaurants()
         ]);
+        
+        // Filter bookings to only show Amici Coffee's bookings
+        const amiciRestaurantId = siteConfig.business.restaurantId;
+        const filteredBookings = bookingsData.filter(
+          booking => booking.restaurant_id === amiciRestaurantId
+        );
+        
         console.log('Tables loaded:', tablesData);
-        console.log('Bookings loaded:', bookingsData);
+        console.log('Bookings loaded (filtered to Amici):', filteredBookings);
         console.log('Restaurants loaded:', restaurantsData);
+        
         setTables(tablesData);
-        setAllBookings(bookingsData);
+        setAllBookings(filteredBookings);
         setRestaurants(restaurantsData);
       } catch (err) {
         console.error('Error loading dashboard data:', err);

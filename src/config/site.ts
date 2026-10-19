@@ -55,9 +55,9 @@ export const siteConfig = {
   // CONTACT & LOCATION
   // ============================================
   contact: {
-    phone: "+44 20 7946 0958",
+    phone: "01767 235236",
     email: "info@amicicoffee.com",
-    address: "123 Fine Dining Street, Downtown District",
+    address: "Girtford Bridge House, Sandy SG19 1NA",
   },
 
   // ============================================
@@ -66,12 +66,11 @@ export const siteConfig = {
   hours: {
     display: "Daily: 8:00 AM - 10:00 PM",
     lastBooking: "9:00 PM",
-    // Optional: Add structured hours for future use
-    // schedule: {
-    //   monday: { open: "08:00", close: "22:00" },
-    //   tuesday: { open: "08:00", close: "22:00" },
-    //   ...
-    // }
+    // Time slot configuration for bookings
+    open: "08:00",
+    close: "22:00",
+    lastBookingTime: "21:00",
+    slotInterval: 30, // minutes
   },
 
   // ============================================
@@ -155,7 +154,7 @@ export const siteConfig = {
     defaultRestaurant: {
       id: "24e2799f-60d5-4e3b-bb30-b8049c9ae56d",
       name: "Amici Coffee",
-      address: "123 Fine Dining Street, Downtown District",
+      address: "Girtford Bridge House, Sandy SG19 1NA",
       cuisine: "Coffee & Dining",
       rating: 4.8,
       imageUrl: "/brand/hero.jpg",

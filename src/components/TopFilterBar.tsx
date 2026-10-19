@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, Users, Search } from 'lucide-react';
+import { siteConfig } from '@/config/site';
 
 interface TopFilterBarProps {
   selectedDate: string;
@@ -49,12 +50,34 @@ const getDaysInMonth = (year: number, month: number) => {
   return days;
 };
 
-const timeSlots = [
-  '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
-  '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
-  '17:00', '17:30', '18:00', '18:30', '19:00', '19:30',
-  '20:00', '20:30', '21:00', '21:30', '22:00'
-];
+// Generate time slots from config
+const generateTimeSlots = (): string[] => {
+  const { open, lastBookingTime, slotInterval } = siteConfig.hours;
+  const slots: string[] = [];
+  
+  // Parse start and end times
+  const [startHour, startMin] = open.split(':').map(Number);
+  const [endHour, endMin] = lastBookingTime.split(':').map(Number);
+  
+  let currentHour = startHour;
+  let currentMin = startMin;
+  
+  while (currentHour < endHour || (currentHour === endHour && currentMin <= endMin)) {
+    const timeStr = `${String(currentHour).padStart(2, '0')}:${String(currentMin).padStart(2, '0')}`;
+    slots.push(timeStr);
+    
+    // Add interval
+    currentMin += slotInterval;
+    if (currentMin >= 60) {
+      currentHour += Math.floor(currentMin / 60);
+      currentMin = currentMin % 60;
+    }
+  }
+  
+  return slots;
+};
+
+const timeSlots = generateTimeSlots();
 
 const partySizes = Array.from({ length: 8 }, (_, i) => (i + 1).toString());
 
