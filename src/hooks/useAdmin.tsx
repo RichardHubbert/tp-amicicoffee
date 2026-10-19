@@ -4,47 +4,37 @@ import { supabase } from '@/integrations/supabase/client';
 
 export const useAdmin = () => {
   const { user } = useAuth();
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserRole = async () => {
+    const checkAdminStatus = async () => {
       if (!user) {
-        setUserRole(null);
+        setIsAdmin(false);
         setIsLoading(false);
         return;
       }
 
       try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('user_id', user.id)
-          .single();
+        // Use tp_is_admin() RPC function for proper admin check
+        const { data, error } = await supabase.rpc('tp_is_admin');
 
         if (error) {
-          console.error('Error fetching user role:', error);
-          setUserRole(null);
+          console.error('Error checking admin status:', error);
+          setIsAdmin(false);
         } else {
-          setUserRole(data?.role || null);
+          setIsAdmin(data === true);
         }
       } catch (error) {
-        console.error('Error fetching user role:', error);
-        setUserRole(null);
+        console.error('Error checking admin status:', error);
+        setIsAdmin(false);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchUserRole();
+    checkAdminStatus();
   }, [user]);
 
-  const isAdmin = useMemo(() => {
-    if (!user || !userRole) return false;
-    
-    // Check if user has admin role (proper role-based access control)
-    return userRole === 'admin';
-  }, [user, userRole]);
-
-  return { isAdmin, user, userRole, isLoading };
+  return { isAdmin, user, isLoading };
 }; 

@@ -1,6 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { format, addMinutes, isSameDay } from 'date-fns';
 import { sendCustomerToCRM } from './crmService';
+import { siteConfig } from '@/config/site';
 
 export interface Table {
   id: string;
@@ -50,16 +51,17 @@ export const fetchTables = async (): Promise<Table[]> => {
   return data || [];
 };
 
-// Fetch bookings for a specific date
+// Fetch bookings for a specific date (using RPC to avoid exposing customer data)
 export const fetchBookingsForDate = async (date: Date): Promise<Booking[]> => {
   const dateString = format(date, 'yyyy-MM-dd');
   console.log('Fetching bookings for date:', dateString);
   
+  // Use RPC function that returns only slot data (no customer names/emails/phones)
   const { data, error } = await supabase
-    .from('bookings')
-    .select('*')
-    .eq('booking_date', dateString)
-    .eq('status', 'confirmed');
+    .rpc('get_booking_availability', { 
+      p_date: dateString,
+      p_restaurant_id: siteConfig.business.restaurantId 
+    });
   
   if (error) {
     console.error('Error fetching bookings:', error);
@@ -203,44 +205,63 @@ export const createBooking = async (bookingData: {
       throw new Error('No suitable table available');
     }
     
+    // Generate booking ID client-side (anon can't read back after insert)
+    const bookingId = crypto.randomUUID();
+    
     // Calculate end time (2.5 hours after start time)
     const [hours, minutes] = bookingData.startTime.split(':').map(Number);
     const startDate = new Date(bookingData.date);
     startDate.setHours(hours, minutes, 0, 0);
     const endDate = addMinutes(startDate, 150); // 2.5 hours
     const endTime = format(endDate, 'HH:mm');
+    const bookingDate = format(bookingData.date, 'yyyy-MM-dd');
     
-    // Insert booking into Supabase
-    const { data, error } = await supabase
+    // Insert booking into Supabase (no .select() - anon can't read back)
+    const { error } = await supabase
       .from('bookings')
       .insert({
+        id: bookingId,
         table_id: optimalTable.id,
         restaurant_id: bookingData.restaurantId,
-        business_id: '24e2799f-60d5-4e3b-bb30-b8049c9ae56d', // Amici Coffee business ID
+        business_id: siteConfig.business.businessId, // From config, not hardcoded
         customer_name: bookingData.customerName,
         customer_email: bookingData.customerEmail,
         customer_phone: bookingData.customerPhone,
-        booking_date: format(bookingData.date, 'yyyy-MM-dd'),
+        booking_date: bookingDate,
         start_time: bookingData.startTime,
         end_time: endTime,
         party_size: bookingData.partySize,
         status: 'confirmed',
         special_requests: bookingData.specialRequests
-      })
-      .select()
-      .single();
+      });
     
     if (error) {
       console.error('❌ Error inserting booking:', error);
       throw error;
     }
     
-    console.log('✅ Booking created successfully:', data);
+    console.log('✅ Booking created successfully with ID:', bookingId);
+    
+    // Build the booking object locally (can't read from DB as anon)
+    const newBooking: Booking = {
+      id: bookingId,
+      table_id: optimalTable.id,
+      restaurant_id: bookingData.restaurantId,
+      customer_name: bookingData.customerName,
+      customer_email: bookingData.customerEmail,
+      customer_phone: bookingData.customerPhone,
+      booking_date: bookingDate,
+      start_time: bookingData.startTime,
+      end_time: endTime,
+      party_size: bookingData.partySize,
+      status: 'confirmed',
+      special_requests: bookingData.specialRequests,
+      created_at: new Date().toISOString()
+    };
     
     // Send customer data to CRM (fire and forget - don't block booking creation)
     try {
       console.log('📧 Sending customer data to CRM...');
-      console.log('🏢 Business ID from booking data:', data.business_id);
       // Use the correct CRM business ID - this is different from the booking platform business ID
       // The CRM edge function will map restaurant IDs to CRM business IDs
       const crmBusinessId = '9c38d437-b6c9-425a-9199-d514007fcb63'; // This is the CRM business ID
@@ -251,10 +272,10 @@ export const createBooking = async (bookingData: {
         customerPhone: bookingData.customerPhone,
         specialRequests: bookingData.specialRequests,
         restaurantId: bookingData.restaurantId,
-        bookingDate: format(bookingData.date, 'yyyy-MM-dd'),
+        bookingDate: bookingDate,
         startTime: bookingData.startTime,
         partySize: bookingData.partySize,
-        bookingId: data.id,
+        bookingId: bookingId,
         businessId: crmBusinessId // Use the correct CRM business ID
       });
       
@@ -268,7 +289,7 @@ export const createBooking = async (bookingData: {
       // Don't throw error - booking was successful, CRM sync is secondary
     }
     
-    return data as Booking;
+    return newBooking;
   } catch (error) {
     console.error('💥 Booking creation failed:', error);
     throw error;
