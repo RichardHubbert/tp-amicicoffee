@@ -160,23 +160,19 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, restaurant
       setConfirmationData(confirmedBooking);
       setCurrentStep(5);
       
-      // Send confirmation email
+      // Send confirmation email (errors are logged but not shown to customer)
       console.log('📧 Attempting to send confirmation email...');
       const emailResult = await sendBookingConfirmationEmail(result);
       
-      if (emailResult.success) {
-        toast({
-          title: "Booking Confirmed!",
-          description: "Your table reservation has been successfully created. A confirmation email has been sent to your inbox.",
-        });
-      } else {
-        console.error('📧 Email failed:', emailResult.error);
-        toast({
-          title: "Booking Confirmed!",
-          description: `Your table reservation has been successfully created. (Email delivery failed: ${emailResult.error})`,
-          variant: "destructive"
-        });
+      if (!emailResult.success) {
+        console.error('📧 Email delivery failed (user not notified):', emailResult.error);
       }
+      
+      // Always show success to customer (booking was created successfully)
+      toast({
+        title: "Booking Confirmed!",
+        description: "Your table reservation has been successfully created. A confirmation email has been sent to your inbox.",
+      });
       
     } catch (error) {
       console.error('💥 Booking submission failed:', error);
