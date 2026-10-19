@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { Resend } from "npm:resend@6.34.1";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,6 +14,8 @@ type BookingEmail = {
   booking_date_time?: string;
   party_size?: number | string;
   special_requests?: string;
+  restaurant_id?: string;
+  // Legacy fields (kept for backward compatibility but restaurant data will be fetched from DB)
   restaurant_name?: string;
   restaurant_address?: string;
   restaurant_phone?: string;
@@ -179,19 +182,53 @@ Deno.serve(async (req) => {
       });
     }
 
-    const restaurantName = body.restaurant_name?.trim() || "Woodman and Olive";  // Default fallback
+    // Fetch restaurant data from database if restaurant_id provided
+    let restaurantName = body.restaurant_name?.trim() || "";
+    let address = body.restaurant_address?.trim() || "";
+    let phone = body.restaurant_phone?.trim() || "";
+    let restaurantEmail = body.restaurant_email?.trim() || "";
+
+    if (body.restaurant_id) {
+      try {
+        const supabaseUrl = Deno.env.get("SUPABASE_URL");
+        const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+        
+        if (supabaseUrl && supabaseKey) {
+          const supabase = createClient(supabaseUrl, supabaseKey);
+          const { data: restaurant, error } = await supabase
+            .from("restaurants")
+            .select("name, address, phone, email")
+            .eq("id", body.restaurant_id)
+            .single();
+
+          if (!error && restaurant) {
+            restaurantName = restaurant.name || restaurantName;
+            address = restaurant.address || address;
+            phone = restaurant.phone || phone;
+            restaurantEmail = restaurant.email || restaurantEmail;
+          }
+        }
+      } catch (dbError) {
+        console.error("Failed to fetch restaurant data:", dbError);
+        // Continue with provided data if DB fetch fails
+      }
+    }
+
     const guestName = body.to_name?.trim() || "there";
     const when = body.booking_date_time?.trim() || "the booked time";
     const partySize = body.party_size ?? "";
     const requests = body.special_requests?.trim() || "None";
-    const address = body.restaurant_address?.trim() || "";
-    const phone = body.restaurant_phone?.trim() || "";
-    const restaurantEmail = body.restaurant_email?.trim() || "";
     const bookingId = body.booking_id?.trim() || "";
-    const from = Deno.env.get("RESEND_FROM") || "Woodman and Olive <onboarding@resend.dev>";  // Default fallback
+    
+    // Use "Table Pilot" as sender display name, keep the configured from address
+    const fromAddress = Deno.env.get("RESEND_FROM") || "onboarding@resend.dev";
+    // Extract just the email if it's in format "Name <email>"
+    const emailMatch = fromAddress.match(/<(.+)>/);
+    const cleanEmail = emailMatch ? emailMatch[1] : fromAddress;
+    const from = `Table Pilot <${cleanEmail}>`;
 
     const message = buildBookingEmail({
-      restaurantName,
+      restaurantName: restaurantName || "the restaurant",
       guestName,
       when,
       partySize: String(partySize),
@@ -206,7 +243,7 @@ Deno.serve(async (req) => {
     const { data, error } = await resend.emails.send({
       from,
       to: [to],
-      subject: `Your table is reserved at ${restaurantName}`,
+      subject: `Your table is reserved${restaurantName ? ` at ${restaurantName}` : ""}`,
       html: message.html,
       text: message.text,
     });
